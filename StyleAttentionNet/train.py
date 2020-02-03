@@ -2,12 +2,12 @@ import torch
 import torch.nn as nn
 import numpy as np
 import argparse
-import os
 
 from model import Model, normalize
 from dataset import CSDataset, ImageCollate
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+from pathlib import Path
 
 
 def calc_content_loss(y4, y5, c4, c5):
@@ -20,7 +20,7 @@ def calc_content_loss(y4, y5, c4, c5):
 def calc_identity1_loss(cc, ss, c, s):
     loss = nn.MSELoss()(cc, c) + nn.MSELoss()(ss, s)
 
-    return loss
+    return 50.0 * loss
 
 
 def calc_identity2_loss(cc_list, ss_list, c_list, s_list):
@@ -52,11 +52,17 @@ def calc_style_loss(y_list, s_list):
         sum_loss += nn.MSELoss()(y_mean, s_mean)
         sum_loss += nn.MSELoss()(y_std, s_std)
 
-    return sum_loss
+    return 3.0 * sum_loss
 
 
-def train(content_path, style_path, epochs, batchsize, interval,
-          c_weight, s_weight, i1_weight, i2_weight):
+def train(epochs,
+          interval,
+          batchsize,
+          modeldir,
+          learning_rate,
+          content_path,
+          style_path):
+
     dataset = CSDataset(c_path=content_path, s_path=style_path)
     collator = ImageCollate()
 
@@ -64,7 +70,7 @@ def train(content_path, style_path, epochs, batchsize, interval,
     model.cuda()
     model.train()
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     iterations = 0
 
     for epoch in range(epochs):
@@ -83,46 +89,33 @@ def train(content_path, style_path, epochs, batchsize, interval,
             _, _, yc_list, cc_list, yc = model(c, c)
             _, _, ys_list, ss_list, ys = model(s, s)
 
-            loss = c_weight * calc_content_loss(y_list[3], y_list[4], c4, c5)
-            loss += s_weight * calc_style_loss(y_list, s_list)
-            loss += i1_weight * calc_identity1_loss(yc, ys, c, s)
-            loss += i2_weight * calc_identity2_loss(yc_list, ys_list, cc_list, ss_list)
+            loss = calc_content_loss(y_list[3], y_list[4], c4, c5)
+            loss += calc_style_loss(y_list, s_list)
+            loss += calc_identity1_loss(yc, ys, c, s)
+            loss += calc_identity2_loss(yc_list, ys_list, cc_list, ss_list)
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
             if iterations % interval == 0:
-                torch.save(model.state_dict(), './model/model_{}.pt'.format(iterations))
-                
-            print('iteration: {} Loss: {}'.format(iterations, loss.data[0]))
+                torch.save(model.state_dict(), f"{modeldir}/model_{iterations}.pt")
+
+            print('iteration: {} Loss: {}'.format(iterations, loss.data))
 
 
 if __name__ == "__main__":
-    model_dir = './model/'
-    if not os.path.exists(model_dir):
-        os.mkdir(model_dir)
-
     parser = argparse.ArgumentParser(description='StyleAttentionNetwork')
     parser.add_argument('--e', default=1000, type=int, help="the number of epochs")
-    parser.add_argument('--b', default=16, type=int, help="batch size")
-    parser.add_argument('--cw', default=1.0, type=float, help="the weight of content loss")
-    parser.add_argument('--sw', default=3.0, type=float, help="the weight of style loss")
-    parser.add_argument('--iw1', default=50.0, type=float, help="the weight of identity loss1")
-    parser.add_argument('--iw2', default=1.0, type=float, help="the weight of identity loss2")
     parser.add_argument('--i', default=1000, type=int, help="the interval of snapshot")
-
+    parser.add_argument('--b', default=16, type=int, help="batch size")
+    parser.add_argument('--modeldir', default='modeldir', type=Path, help="model output directory")
+    parser.add_argument('--lr', default=0.0001, type=float, help="learning rate of Adam")
+    parser.add_argument('--con_path', type=Path, help="path containing content images")
+    parser.add_argument('--sty_path', type=Path, help="path containing style images")
     args = parser.parse_args()
-    epochs = args.e
-    batchsize = args.b
-    c_weight = args.cw
-    s_weight = args.sw
-    i1_weight = args.iw1
-    i2_weight = args.iw2
-    interval = args.i
 
-    content_path = './coco2015/test2015/'
-    style_path = './wikiart/'
+    modeldir = args.modeldir
+    modeldir.mkdir(exist_ok=True)
 
-    train(content_path, style_path, epochs, batchsize, interval,
-          c_weight, s_weight, i1_weight, i2_weight)
+    train(args.e, args.i, args.b, modeldir, args.lr, args.con_path, args.sty_path)

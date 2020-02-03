@@ -1,51 +1,47 @@
 import torch
 import numpy as np
-import os
 import cv2 as cv
 
 from torch.utils.data import Dataset
+from pathlib import Path
 
 
 class CSDataset(Dataset):
-    def __init__(self, c_path, s_path):
-        self.cpath = c_path
-        self.spath = s_path
-        self.content_list = os.listdir(c_path)
-        self.ncontent = len(self.content_list)
-        self.style_list = os.listdir(s_path)
-        self.nstyle = len(self.style_list)
+    def __init__(self,
+                 c_path: Path,
+                 s_path: Path,
+                 extension='.jpg',
+                 mode='train'
+                 ):
+
+        self.extension = extension
+        self.mode = mode
+
+        self.c_list, self.c_len = self._get_list_length(c_path)
+        self.s_list, self.s_len = self._get_list_length(s_path)
+
+    def __repr__(self):
+        return f"content length: {self.c_len} style length: {self.s_len}"
+
+    def _get_list_length(self, path: Path):
+        pathlist = list(path.glob(f"*{self.extension}"))
+        pathlen = len(pathlist)
+
+        return pathlist, pathlen
 
     def __len__(self):
-        return self.ncontent - 100
+        if self.mode == 'train':
+            return self.c_len
+        else:
+            return 99
 
     def __getitem__(self, index):
-        c_name = self.cpath + self.content_list[index]
+        c_path = self.c_list[index]
 
-        rnd = np.random.randint(self.nstyle)
-        s_name = self.spath + self.style_list[rnd]
+        rnd = np.random.randint(self.s_len)
+        s_path = self.s_list[rnd]
 
-        return (c_name, s_name)
-
-
-class CSTestDataset(Dataset):
-    def __init__(self, c_path, s_path):
-        self.cpath = c_path
-        self.spath = s_path
-        self.content_list = os.listdir(c_path)
-        self.ncontent = len(self.content_list)
-        self.style_list = os.listdir(s_path)
-        self.nstyle = len(self.style_list)
-
-    def __len__(self):
-        return 99
-
-    def __getitem__(self, index):
-        c_name = self.cpath + self.content_list[index]
-
-        rnd = np.random.randint(self.nstyle)
-        s_name = self.spath + self.style_list[rnd]
-
-        return (c_name, s_name)
+        return (c_path, s_path)
 
 
 class ImageCollate():
@@ -54,7 +50,7 @@ class ImageCollate():
 
     def _preapre(self, filename):
         image_path = filename
-        image = cv.imread(image_path)
+        image = cv.imread(str(image_path))
         if not image is None:
             height, width = image.shape[0], image.shape[1]
 
@@ -84,7 +80,7 @@ class ImageCollate():
 
     def _test_preapre(self, filename):
         image_path = filename
-        image = cv.imread(image_path)
+        image = cv.imread(str(image_path))
         if not image is None:
             height, width = image.shape[0], image.shape[1]
 

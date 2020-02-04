@@ -5,10 +5,10 @@ from chainer import optimizers, cuda
 xp = cuda.cupy
 
 
-def set_optimizer(model, alpha, beta):
+def set_optimizer(model, alpha, beta, weight_decay):
     optimizer = optimizers.Adam(alpha=alpha, beta1=beta)
     optimizer.setup(model)
-    optimizer.add_hook(chainer.optimizer.WeightDecay(0.00001))
+    optimizer.add_hook(chainer.optimizer.WeightDecay(weight_decay))
 
     return optimizer
 

@@ -12,6 +12,7 @@ cuda.get_device(0).use()
 class CBR(Chain):
     def __init__(self, in_ch, out_ch, kernel=3, stride=1, pad=1,
                  act=F.relu, up=False, down=False, sn=False):
+
         super(CBR, self).__init__()
         scale = math.sqrt(1 / (in_ch) / kernel / kernel)
         w = initializers.Uniform(scale=scale)
@@ -143,7 +144,7 @@ class Generator(Chain):
 
 class Discriminator(Chain):
     def __init__(self, nc_size, base=64):
-        self.nc_size = nc_size
+        self.nc_size = nc_size + 1
         wscale = math.sqrt(1 / (base*32) / 3 / 3)
         wout = initializers.Uniform(scale=wscale)
         super(Discriminator, self).__init__()
@@ -156,7 +157,7 @@ class Discriminator(Chain):
             self.c4 = CBRDis(base*8, base*16, 4, 2, 1, down=True, act=F.leaky_relu)
             self.c5 = CBRDis(base*16, base*32, 4, 2, 1, down=True, act=F.leaky_relu)
             self.cout = L.Convolution2D(base*32, 1, 1, nobias=True, initialW=wout)
-            self.cinp = L.Convolution2D(base*32, 6, 1, 1, 0, nobias=True, initialW=wout)
+            self.cinp = L.Convolution2D(base*32, nc_size, 1, 1, 0, nobias=True, initialW=wout)
             self.cma0 = L.Convolution2D(base*64+nc_size, base*32, 1, 1, 0, nobias=True, initialW=wout)
             self.cma1 = L.Convolution2D(base*32, 1, 1, 1, 0, nobias=True, initialW=wout)
 

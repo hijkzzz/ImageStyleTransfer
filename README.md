@@ -1,5 +1,19 @@
 # Image Style Transfer
 
+## TODO
+- [x] CycleGAN
+- [x] StarGAN
+- [x] AdaIN
+- [x] InstaGAN
+- [x] StyleAttentionNet
+- [x] U-GAT-IT
+- [x] RelGAN
+- [ ] CartoonGAN
+- [ ] DRIT
+- [ ] MUNIT
+- [ ] FUNIT
+- [ ] SoftAdaIN
+
 ## Quick Results
 ### CycleGAN
 [Paper](https://arxiv.org/pdf/1703.10593.pdf "here")  

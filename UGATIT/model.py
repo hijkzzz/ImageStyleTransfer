@@ -15,7 +15,7 @@ def weights_init_normal(m):
     elif classname.find('BatchNorm2d') != -1:
         init.normal_(m.weight.data, 1.0, 0.02)
         init.constant_(m.bias.data, 0.0)
-
+        
 
 def init_weights(net, init_type='normal'):
     print('initialization method [%s]' % init_type)
@@ -317,7 +317,7 @@ class Discriminator(nn.Module):
             CIRDis(base, base*2),
             CIRDis(base*2, base*4),
             CIRDis(base*4, base*8),
-            CIRDis(base*8, base*8),
+        #    CIRDis(base*8, base*16),
         )
         init_weights(self.down)
 
@@ -328,6 +328,41 @@ class Discriminator(nn.Module):
             nn.ReflectionPad2d(1),
             nn.utils.spectral_norm(
                 nn.Conv2d(base * 8, 1, 4, 1, 0, bias=False)
+            )
+        )
+        init_weights(self.out)
+
+    def forward(self, x):
+        h = self.down(x)
+        h, logit = self.attn(h)
+        hmap = torch.sum(h, dim=1, keepdim=True)
+        h = self.out(h)
+
+        return h, logit, hmap
+
+
+class GlobalDiscriminator(nn.Module):
+    def __init__(self, base=64):
+        super(GlobalDiscriminator, self).__init__()
+
+        self.down = nn.Sequential(
+            CIRDis(3, base),
+            CIRDis(base, base*2),
+            CIRDis(base*2, base*4),
+            CIRDis(base*4, base*8),
+            CIRDis(base*8, base*8),
+            CIRDis(base*8, base*16),
+        #    CIRDis(base*16, base*16),
+        )
+        init_weights(self.down)
+
+        self.attn = AttentionDis(base*16, base*16)
+        init_weights(self.attn)
+
+        self.out = nn.Sequential(
+            nn.ReflectionPad2d(1),
+            nn.utils.spectral_norm(
+                nn.Conv2d(base * 16, 1, 4, 1, 0, bias=False)
             )
         )
         init_weights(self.out)

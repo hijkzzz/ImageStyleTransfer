@@ -1,6 +1,12 @@
-# Image Style Transfer
+# ImageStyleTransfer
 
-## TODO
+## Introduction
+This repository implements style transfer methods by deep learning. You may be confused seeing repository's name and contents, it is natural because this repository mixes neural style transfer (ex. AdaIN) and image-to-image translation (ex. CycleGAN). I'm sorry. Anyway, from this point, I don't mention to neural style transfer. In image-to-image translation, I mainly implement the method of unpaired image-to-image translation. If I think of image-to-image translation on characters' images, it is interesting for me to convert hair color or hair style of character. However, if you do this in the system of paired image-to-image translation such as pix2pix, you'll find it difficult to collect paired data because there are few images of the same character in various hair colors. Therefore, I think it is better to implement unpaired image-to-image translation.
+
+## Image-to-Image Translation Experiment
+
+## Methods
+
 - [x] CycleGAN
 - [x] StarGAN
 - [x] AdaIN

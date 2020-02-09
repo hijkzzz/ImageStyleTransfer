@@ -5,13 +5,15 @@ This repository implements style transfer methods by deep learning. You may be c
 
 ## Image-to-Image Translation Experiment
 
-## Methods
+### Motivation
+Described above, I intend to make use of unpaired image-to-image translation because I find difficulties with collecting paired data. I implement not only single domain to single domain translation such as CycleGAN, but also many domains to many domains translation such as StarGAN. Of course, I also implement multimodal translation such as MUNIT.
+
+### Methods
+There are many methods I tried in this repository. If you know details about each method, please visit each method's directory.
 
 - [x] CycleGAN
 - [x] StarGAN
-- [x] AdaIN
 - [x] InstaGAN
-- [x] StyleAttentionNet
 - [x] U-GAT-IT
 - [x] RelGAN
 - [ ] CartoonGAN
@@ -20,33 +22,44 @@ This repository implements style transfer methods by deep learning. You may be c
 - [ ] FUNIT
 - [ ] SoftAdaIN
 
-## Quick Results
-### CycleGAN
-[Paper](https://arxiv.org/pdf/1703.10593.pdf "here")  
-Size:128×128  
+### Quick Results
+- CycleGAN  
+
 ![CycleGAN](./CycleGAN/result.jpg)
 
-### StarGAN
-[Paper](https://arxiv.org/abs/1711.09020 "here")  
-Size:128×128  
+- StarGAN  
+
 ![StarGAN](./StarGAN/result_2.png)
 
-### AdaIN
-[Paper](https://arxiv.org/pdf/1703.06868.pdf)
-
-![AdaIN](https://github.com/SerialLain3170/Style-Transfer/blob/master/AdaIN/images/anime.png)
-
-### InstaGAN
-[Paper](https://arxiv.org/pdf/1812.10889.pdf)
+- InstaGAN  
 
 ![InstaGAN](https://github.com/SerialLain3170/ImageStyleTransfer/blob/master/InstaGAN/result.png)
 
-### U-GAT-IT
-[Paper](https://arxiv.org/pdf/1907.10830.pdf)
+- U-GAT-IT  
 
 ![U-GAT-IT](https://github.com/SerialLain3170/ImageStyleTransfer/blob/master/UGATIT/Result.jpg)
 
-### RelGAN
-[Paper](https://arxiv.org/pdf/1908.07269.pdf)
+- RelGAN  
 
 ![RelGAN](https://github.com/SerialLain3170/ImageStyleTransfer/blob/master/RelGAN/RelGAN_result.jpg)
+
+## Neural Style Transfer Experiment
+
+### Motivation
+In the system of image-to-image translation, we converts the part of image in source domain to this in target domain. However, I would like to convert the atmosphere of image to another such as real to anime. 
+
+### Methods
+There are many methods I tried in this repository. If you know details about each method, please visit each method's directory.
+
+- [x] AdaIN
+- [x] StyleAttentionNet
+- [ ] SoftAdaIN
+
+### Quick Results
+- AdaIN  
+
+![AdaIN](https://github.com/SerialLain3170/Style-Transfer/blob/master/AdaIN/images/anime.png)
+
+- StyleAttentionNet  
+
+![StyleAttentionNet](https://github.com/SerialLain3170/ImageStyleTransfer/blob/master/StyleAttentionNet/transfer_result.png)

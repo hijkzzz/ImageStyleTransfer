@@ -1,8 +1,6 @@
 # StarGAN
 
 ## Summary
-![stargan](https://github.com/SerialLain3170/GAN-papers/blob/master/makegirlsmoe/stargan.png)
-
 CycleGANはシングルドメイン間でしか変換出来なかった。多ドメイン間では、また別のネットワークを用意する必要があった。  
 そこで多ドメイン間でも変換できるようにしたのがこのStarGAN。
 - Generatorは、どのドメインへと変化させるか、そのドメインを表すベクトルをconcatして代入する

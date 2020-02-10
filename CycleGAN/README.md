@@ -1,8 +1,6 @@
 # CycleGAN
 
 ## Summary
-![cyclegan](https://github.com/SerialLain3170/GAN-papers/blob/master/makegirlsmoe/cyclegan.png)
-
 - Conventional the method of style transfer like pix2pix needs a lot of paired data. But, CycleGAN is able to deal with unpaired data. 
 - There are two generators and two discriminators.
 - In addition to adversarial loss, the authors of this paper propose cycle-consistency loss which caculates l1 loss between and source image and go-and-back image.

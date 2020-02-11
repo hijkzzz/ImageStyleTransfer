@@ -20,7 +20,6 @@ There are many methods I tried in this repository. If you know details about eac
 - [ ] DRIT
 - [ ] MUNIT
 - [ ] FUNIT
-- [ ] SoftAdaIN
 
 ### Quick Results
 - CycleGAN  
